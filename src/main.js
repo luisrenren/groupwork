@@ -11,7 +11,8 @@ let camera,
   stats,
   gui,
   settings = {};
-
+  
+// 初始化场景
 function initScene() {}
 
 function initCamera() {}
