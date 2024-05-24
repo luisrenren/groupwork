@@ -12,26 +12,16 @@ let camera,
   gui,
   settings = {};
 
-function initScene() {
+function initScene() {}
 
-}
+function initCamera() {}
 
-function initCamera() {
+function initLight(params) {}
 
-}
-
-function initLight(params) {
-
-}
-
-function initRenderer(params) {
-
-}
+function initRenderer(params) {}
 
 // requestAnimationFrame  |  setAnimationLoop
-function animate() {
-
-}
+function animate() {}
 
 function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -40,12 +30,8 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
 }
 
-
 // 坐标系辅助对象、创建轨道控制器、创建stats对象 等辅助工具
-function initHelper() {
-
-
-}
+function initHelper() {}
 
 function initGUI() {
   gui = new GUI();
