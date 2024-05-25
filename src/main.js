@@ -10,6 +10,7 @@ import cube from "./modules/cube.js";
 import girl from './modules/girl.js';
 import castle from './modules/castle.js';
 import animal from './modules/animal.js';
+import sprite from './modules/sprite.js'
 
 // 全局变量
 let camera,
@@ -38,6 +39,7 @@ function initScene() {
   scene.add(girl[0])
   scene.add(castle[0])
   scene.add(animal[0],animal[1],animal[2],animal[3])
+  scene.add(sprite)
 }
 
 //相机
