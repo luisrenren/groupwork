@@ -3,9 +3,13 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Stats from 'three/addons/libs/stats.module.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+import { Clock } from 'three';
 
 //模型
 import cube from "./modules/cube.js";
+import girl from './modules/girl.js';
+import castle from './modules/castle.js';
+import animal from './modules/animal.js';
 
 // 全局变量
 let camera,
@@ -16,6 +20,7 @@ let camera,
   settings;
 
 let ambientLight, pointLight;
+const clock = new Clock();
 
 function init() {
   initScene();
@@ -29,7 +34,10 @@ function init() {
 function initScene() {
   scene = new THREE.Scene();
   //添加物体
-  scene.add(cube);
+  //scene.add(cube);
+  scene.add(girl[0])
+  scene.add(castle[0])
+  scene.add(animal[0],animal[1],animal[2],animal[3])
 }
 
 //相机
@@ -40,7 +48,7 @@ function initCamera() {
     0.1,  //近截面
     1000,  //远截面
   );
-  camera.position.set(50, 50, 50);
+  camera.position.set(-30, 10, 35);
   camera.lookAt(0, 0, 0);
 }
 
@@ -66,6 +74,7 @@ function initRenderer(params) {
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor('#63b7ef',1.0);
   renderer.render(scene, camera);
 
   document.body.appendChild(renderer.domElement);
@@ -78,12 +87,19 @@ function initRenderer(params) {
 //动画
 function animate() {
   // 更新立方体位置
+  // console.log(girl,"girl")
   updateCubePosition();
 
+  renderer.setAnimationLoop(()=>{
+    //浏览器刷新的时候浏览器重新渲染
+    renderer.render(scene,camera);
+    //requestAnimationFrame(animate);
 
-  // 渲染场景
-  renderer.render(scene, camera);
+    const delta = clock.getDelta();
+    animal.forEach(animal => animal.tick(delta));
 
+    //stats.update();
+})
   // 请求下一帧动画
   requestAnimationFrame(animate);
 }
@@ -133,9 +149,11 @@ const movementSpeed = 1;
 // 处理按键按下事件的函数
 function handleKeyDown(event) {
   const keyCode = event.code;
+  console.log(keyCode)
   switch (keyCode) {
     case 'KeyW':
       moveForward = true;
+      console.log("WWW")
       break;
     case 'KeyA':
       moveLeft = true;
@@ -172,23 +190,23 @@ function handleKeyUp(event) {
 
 function updateCubePosition() {
   if (moveForward) {
-    cube.position.z -= movementSpeed;
+    girl[0].position.z -= movementSpeed;
   }
   if (moveLeft) {
-    cube.position.x -= movementSpeed;
+    girl[0].position.x -= movementSpeed;
   }
   if (moveBackward) {
-    cube.position.z += movementSpeed;
+    girl[0].position.z += movementSpeed;
   }
   if (moveRight) {
-    cube.position.x += movementSpeed;
+    girl[0].position.x += movementSpeed;
   }
 
   // 同时更新相机位置，保持与立方体的相对位置不变
-  const cameraOffset = new THREE.Vector3(50, 50, 50); // 相机相对立方体的偏移量
-  const cameraTarget = cube.position.clone().add(cameraOffset); // 相机的目标位置
+  const cameraOffset = new THREE.Vector3(-30, 10, 35); // 相机相对立方体的偏移量
+  const cameraTarget = girl[0].position.clone().add(cameraOffset); // 相机的目标位置
   camera.position.copy(cameraTarget); // 更新相机位置
-  camera.lookAt(cube.position); // 让相机始终朝向立方体
+  camera.lookAt(girl[0].position); // 让相机始终朝向立方体
 }
 
 
