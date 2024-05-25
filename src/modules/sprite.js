@@ -4,7 +4,7 @@ function getTexture(){
   //纹理贴图加载器TextureLoader
   const texLoader = new THREE.TextureLoader();
   // .load()方法加载图像，返回一个纹理对象
-  const texture = texLoader.load('./src/assets/1.png');
+  const texture = texLoader.load('./src/assets/images/1.png');
   return texture
 }
 

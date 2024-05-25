@@ -50,7 +50,7 @@ function initCamera() {
     0.1,  //近截面
     1000,  //远截面
   );
-  camera.position.set(-30, 10, 35);
+  camera.position.set(-30, 40, 35);
   camera.lookAt(0, 0, 0);
 }
 
@@ -67,8 +67,8 @@ function initLight(params) {
   scene.add(pointLight);
 
   // 点光源辅助观察
-  const pointLightHelpler = new THREE.PointLightHelper(pointLight);
-  scene.add(pointLightHelpler);
+  // const pointLightHelpler = new THREE.PointLightHelper(pointLight);
+  // scene.add(pointLightHelpler);
 }
 
 //渲染
@@ -83,13 +83,12 @@ function initRenderer(params) {
   window.addEventListener('resize', onWindowResize); // 使用 addEventListener 监听 resize 事件
 
   //视图辅助
-  initHelper();
+  //initHelper();
 }
 
 //动画
 function animate() {
   // 更新立方体位置
-  // console.log(girl,"girl")
   updateCubePosition();
 
   renderer.setAnimationLoop(()=>{
@@ -144,6 +143,8 @@ let moveForward = false;
 let moveBackward = false;
 let moveLeft = false;
 let moveRight = false;
+// 1234前后左右
+let face = 1;
 
 // 定义移动速度
 const movementSpeed = 1;
@@ -154,17 +155,57 @@ function handleKeyDown(event) {
   console.log(keyCode)
   switch (keyCode) {
     case 'KeyW':
-      moveForward = true;
-      console.log("WWW")
+      moveBackward = true;
+
+      if(face==1){
+        girl[0].rotateZ(Math.PI)
+      }else if(face==2){
+      }else if(face==3){
+        girl[0].rotateZ(Math.PI/2)
+      }else if(face==4){
+        girl[0].rotateZ(-Math.PI/2)
+      }
+      face=2;
       break;
     case 'KeyA':
-      moveLeft = true;
+      moveRight = true;
+
+      if(face==1){
+        girl[0].rotateZ(-Math.PI/2)
+      }else if(face==2){
+        girl[0].rotateZ(Math.PI/2)
+      }else if(face==3){
+        girl[0].rotateZ(Math.PI)
+      }else if(face==4){
+      }
+      face=4;
+
       break;
     case 'KeyS':
-      moveBackward = true;
+      moveForward = true;
+
+      if(face==1){
+      }else if(face==2){
+        girl[0].rotateZ(Math.PI)
+      }else if(face==3){
+        girl[0].rotateZ(-Math.PI/2)
+      }else if(face==4){
+        girl[0].rotateZ(Math.PI/2)
+      }
+      face=1;
       break;
     case 'KeyD':
-      moveRight = true;
+      moveLeft = true;
+
+      if(face==1){
+        girl[0].rotateZ(Math.PI/2)
+      }else if(face==2){
+        girl[0].rotateZ(-Math.PI/2)
+      }else if(face==3){
+      }else if(face==4){
+        girl[0].rotateZ(Math.PI)
+      }
+      face=3;
       break;
   }
 }
@@ -174,43 +215,82 @@ function handleKeyUp(event) {
   const keyCode = event.code;
   switch (keyCode) {
     case 'KeyW':
-      moveForward = false;
-      break;
-    case 'KeyA':
-      moveLeft = false;
-      break;
-    case 'KeyS':
       moveBackward = false;
       break;
-    case 'KeyD':
+    case 'KeyA':
       moveRight = false;
       break;
+    case 'KeyS':
+      moveForward = false;
+      break;
+    case 'KeyD':
+      moveLeft = false;
+      console.log(girl[0].position)
+      break;
   }
+    if(girl[0].position.x==81&&girl[0].position.y==0&&girl[0].position.z==57){
+      alert("恢复体力")
+    }
+    if(girl[0].position.x==81&&girl[0].position.y==0&&girl[0].position.z==56){
+      alert("恢复体力")
+    }
+    if(girl[0].position.x==80&&girl[0].position.y==0&&girl[0].position.z==57){
+      alert("恢复体力")
+    }
+    if(girl[0].position.x==80&&girl[0].position.y==0&&girl[0].position.z==56){
+      alert("恢复体力")
+    }
 }
 
 // 更新立方体位置
 
 function updateCubePosition() {
-  if (moveForward) {
-    girl[0].position.z -= movementSpeed;
-  }
-  if (moveLeft) {
-    girl[0].position.x -= movementSpeed;
-  }
-  if (moveBackward) {
-    girl[0].position.z += movementSpeed;
-  }
-  if (moveRight) {
-    girl[0].position.x += movementSpeed;
-  }
+  //   const girlModel = girl[0]; // 获取女孩模型对象
+  
+    // 限制移动范围
+    const minX = -40; // 平面左侧边界
+    const maxX = 80; // 平面右侧边界
+    const minZ = 0; // 平面顶部边界
+    const maxZ = 80; // 平面底部边界
+  
+  //   // 保存女孩原来的位置
+  //   const originalPosition = girlModel.position.clone();
+  
 
-  // 同时更新相机位置，保持与立方体的相对位置不变
-  const cameraOffset = new THREE.Vector3(-30, 10, 35); // 相机相对立方体的偏移量
-  const cameraTarget = girl[0].position.clone().add(cameraOffset); // 相机的目标位置
-  camera.position.copy(cameraTarget); // 更新相机位置
-  camera.lookAt(girl[0].position); // 让相机始终朝向立方体
-}
-
+    if (moveForward) {
+      if(girl[0].position.z<=maxZ){
+      girl[0].position.z += movementSpeed;
+      camera.position.z += movementSpeed;
+    }
+    }
+    if (moveLeft) {
+      if(girl[0].position.x<=maxX){
+      girl[0].position.x += movementSpeed;
+      camera.position.x += movementSpeed;
+      }
+    }
+    if (moveBackward) {
+      if(girl[0].position.z>=minZ){
+      girl[0].position.z -= movementSpeed;
+      camera.position.z -= movementSpeed;
+      }
+    }
+    if (moveRight) {
+    if(girl[0].position.x>=minX){
+      girl[0].position.x -= movementSpeed;
+      camera.position.x -= movementSpeed;
+    }
+    }
+  
+  
+  //   // 同时更新相机位置，保持与立方体的相对位置不变
+  //   const cameraOffset = new THREE.Vector3(0, 30, -20); // 相机相对立方体的偏移量
+  //   const cameraTarget = girl[0].position.clone().add(cameraOffset); // 相机的目标位置
+  //   camera.position.copy(cameraTarget); // 更新相机位置
+  //   camera.lookAt(girl[0].position); // 让相机始终朝向立方体
+      // camera.position.x = girl[0].position.x;
+      // camera.position.z = girl[0].position.z;
+  }
 
 // 初始化
 init();

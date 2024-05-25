@@ -19,4 +19,5 @@ const girl =setupModel(girlData);
 girl.position.set(0,0,0)
 
 
+
 export default [girl];
