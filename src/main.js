@@ -15,20 +15,21 @@ let camera,
   gui,
   settings;
 
-  let ambientLight,pointLight;
+let ambientLight, pointLight;
 
-function init(){
+function init() {
   initScene();
   initCamera();
   initLight();
   initRenderer();
+  initEventListeners(); // 初始化事件监听器
 }
-  
+
 // 初始化场景
 function initScene() {
   scene = new THREE.Scene();
   //添加物体
-  scene.add(cube)
+  scene.add(cube);
 }
 
 //相机
@@ -39,8 +40,8 @@ function initCamera() {
     0.1,  //近截面
     1000,  //远截面
   );
-  camera.position.set(50,50,50);
-  camera.lookAt(0,0,0);
+  camera.position.set(50, 50, 50);
+  camera.lookAt(0, 0, 0);
 }
 
 //光源
@@ -58,34 +59,39 @@ function initLight(params) {
   // 点光源辅助观察
   const pointLightHelpler = new THREE.PointLightHelper(pointLight);
   scene.add(pointLightHelpler);
-
 }
 
 //渲染
 function initRenderer(params) {
-    renderer = new THREE.WebGLRenderer({antialias:true,});
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth,window.innerHeight);
-    renderer.render(scene,camera);
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.render(scene, camera);
 
-    document.body.appendChild(renderer.domElement);
-    window.onresize = onWindowResize;
+  document.body.appendChild(renderer.domElement);
+  window.addEventListener('resize', onWindowResize); // 使用 addEventListener 监听 resize 事件
 
-    //视图辅助
-    initHelper();
+  //视图辅助
+  initHelper();
 }
 
 //动画
-// requestAnimationFrame  |  setAnimationLoop
 function animate() {
+  // 更新立方体位置
+  updateCubePosition();
 
+
+  // 渲染场景
+  renderer.render(scene, camera);
+
+  // 请求下一帧动画
+  requestAnimationFrame(animate);
 }
 
 //窗口被调整大小时发生
 function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth / window.innerHeight;
-  // 如果相机的一些属性发生了变化，需要执行updateProjectionMatrix ()方法更新相机的投影矩阵
   camera.updateProjectionMatrix();
 }
 
@@ -95,26 +101,99 @@ function initHelper() {
   const axesHelper = new THREE.AxesHelper(50);
   scene.add(axesHelper);
   //轨道控制器
-  const constrols = new OrbitControls(camera,renderer.domElement);
-  constrols.addEventListener('change',() => {
-      renderer.render(scene,camera);
-  })
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.addEventListener('change', () => {
+    renderer.render(scene, camera);
+  });
 
   //参数1 网格大小 参数2 分成几份 参数3  中心轴颜色 参数4 网格线的颜色
-  const gridHelper = new THREE.GridHelper(1000,100,0x000000,0x0000ff);
+  const gridHelper = new THREE.GridHelper(1000, 100, 0x000000, 0x0000ff);
   scene.add(gridHelper);
 
   //创建stats对象
   stats = new Stats();
-  //stats.domElement:web页面上输出计算结果,一个div元素，
   document.body.appendChild(stats.domElement);
-  
 }
 
-function initGUI() {
-  gui = new GUI();
+// 初始化事件监听器
+function initEventListeners() {
+  document.addEventListener('keydown', handleKeyDown);
+  document.addEventListener('keyup', handleKeyUp);
+}
+
+// 定义移动方向
+let moveForward = false;
+let moveBackward = false;
+let moveLeft = false;
+let moveRight = false;
+
+// 定义移动速度
+const movementSpeed = 1;
+
+// 处理按键按下事件的函数
+function handleKeyDown(event) {
+  const keyCode = event.code;
+  switch (keyCode) {
+    case 'KeyW':
+      moveForward = true;
+      break;
+    case 'KeyA':
+      moveLeft = true;
+      break;
+    case 'KeyS':
+      moveBackward = true;
+      break;
+    case 'KeyD':
+      moveRight = true;
+      break;
+  }
+}
+
+// 处理按键松开事件的函数
+function handleKeyUp(event) {
+  const keyCode = event.code;
+  switch (keyCode) {
+    case 'KeyW':
+      moveForward = false;
+      break;
+    case 'KeyA':
+      moveLeft = false;
+      break;
+    case 'KeyS':
+      moveBackward = false;
+      break;
+    case 'KeyD':
+      moveRight = false;
+      break;
+  }
+}
+
+// 更新立方体位置
+
+function updateCubePosition() {
+  if (moveForward) {
+    cube.position.z -= movementSpeed;
+  }
+  if (moveLeft) {
+    cube.position.x -= movementSpeed;
+  }
+  if (moveBackward) {
+    cube.position.z += movementSpeed;
+  }
+  if (moveRight) {
+    cube.position.x += movementSpeed;
+  }
+
+  // 同时更新相机位置，保持与立方体的相对位置不变
+  const cameraOffset = new THREE.Vector3(50, 50, 50); // 相机相对立方体的偏移量
+  const cameraTarget = cube.position.clone().add(cameraOffset); // 相机的目标位置
+  camera.position.copy(cameraTarget); // 更新相机位置
+  camera.lookAt(cube.position); // 让相机始终朝向立方体
 }
 
 
+// 初始化
 init();
+
+// 开始动画循环
 animate();
